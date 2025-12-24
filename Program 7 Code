@@ -1,0 +1,132 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+
+typedef struct Node {
+    int data;
+    struct Node* prev;
+    struct Node* next;
+} Node;
+
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->prev = NULL;
+    newNode->next = NULL;
+    return newNode;
+}
+
+void insertAtBeginning(Node** head, int data) {
+    Node* newNode = createNode(data);
+    if (*head == NULL) {
+        *head = newNode;
+        return;
+    }
+    newNode->next = *head;
+    (*head)->prev = newNode;
+    *head = newNode;
+}
+
+void insertAtEnd(Node** head, int data) {
+    Node* newNode = createNode(data);
+    if (*head == NULL) {
+        *head = newNode;
+        return;
+    }
+    Node* temp = *head;
+    while (temp->next != NULL)
+        temp = temp->next;
+    temp->next = newNode;
+    newNode->prev = temp;
+}
+
+void deleteNode(Node** head, int key) {
+    if (*head == NULL) return;
+
+    Node* temp = *head;
+
+    while (temp != NULL && temp->data != key)
+        temp = temp->next;
+
+    if (temp == NULL) {
+        printf("Node not found!\n");
+        return;
+    }
+
+    if (temp->prev != NULL)
+        temp->prev->next = temp->next;
+    else
+        *head = temp->next;
+
+    if (temp->next != NULL)
+        temp->next->prev = temp->prev;
+
+    free(temp);
+}
+
+void displayForward(Node* head) {
+    Node* temp = head;
+    printf("Forward: ");
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+void displayBackward(Node* head) {
+    if (head == NULL) return;
+
+    Node* temp = head;
+    while (temp->next != NULL)
+        temp = temp->next;
+
+    printf("Backward: ");
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->prev;
+    }
+    printf("\n");
+}
+
+void freeList(Node** head) {
+    Node* temp;
+    while (*head != NULL) {
+        temp = *head;
+        *head = (*head)->next;
+        free(temp);
+    }
+}
+
+void main()
+{
+    Node *head = NULL;
+
+    int ch, value, key;
+    do
+    {
+        printf("\n  1.Insert at beginning \n 2.Insert at end\n 3.Delete node\n 4.Display forward\n 5.Display backward\n ");
+        printf("Enter your choice:");
+        scanf("%d",&ch);
+        switch(ch)
+        {
+            case 1: printf("enter the value to be inserted:");
+                    scanf("%d", &value);
+                    insertAtBeginning(&head, value);
+                    break;
+            case 2: printf("enter the value to be inserted:");
+                    scanf("%d", &value);
+                    insertAtEnd(&head, value);
+                    break;
+            case 3: printf("Enter the key to delete");
+                    scanf("%d", &value);
+                    deleteNode(&head, value);
+                    break;
+            case 4 : displayForward(head);
+                     break;
+            case 5: displayBackward(head);
+                    break;
+            default: printf("\n your choice is wrong!.. ");
+        }
+    }while(ch!=5);
+}
